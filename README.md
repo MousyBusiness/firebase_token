@@ -1,4 +1,4 @@
-# Firebase Token CLI
+# Firebase Token
 Gets Firebase auth tokens (for development purposes only)
 
 ### Getting started
@@ -12,6 +12,9 @@ Gets Firebase auth tokens (for development purposes only)
 8. Ensure Firebase service account exists in Firebase: `Project Settings > Service Accounts > Create Service Account (if doesn't already exist)`
 9. Copy Firebase Admin APIKey in GoogleCloud: `API & Services > Credentials > API Keys > the one which says (auto created by Firebase)`
 10. Get tokens `go run main.go --apiKey xyz123 --config ~/Downloads/yourfirebasewebappconfig.json`
+
+### Quick install
+`go install github.com/mousybusiness/firebase_token` then simply `firebase_token --help`
 
 ### Refreshing
 `go run main.go  --apiKey xyz123 --config ~/Downloads/yourfirebasewebappconfig.json --refresh YOUR_REFRESH_TOKEN`
