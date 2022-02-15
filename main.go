@@ -28,11 +28,13 @@ func main() {
 	log.SetLevel(logLevel)
 	log.SetOutput(os.Stderr)
 
+	port := "5000"
 	var cfg, apiKey, refresh string
 	var token bool
 	flag.StringVar(&apiKey, "apiKey", "", "Admin service account API key (see README.md)")
 	flag.StringVar(&cfg, "config", "", "Web app config JSON (see README.md)")
 	flag.StringVar(&refresh, "refresh", "", "Refresh without UI using existing refresh token")
+	flag.StringVar(&port, "port", "", "Redirect port")
 	flag.BoolVar(&token, "token", false, "Only returns IDToken if successful, useful for scripts")
 
 	flag.Parse()
@@ -70,7 +72,7 @@ func main() {
 
 	log.Debugf("config: %v", config)
 
-	c := fireb.New(config)
+	c := fireb.New(port, config)
 
 	var credentials *creds.Credentials
 	if refresh == "" {

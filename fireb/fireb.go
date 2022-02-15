@@ -48,6 +48,7 @@ type (
 	}
 
 	FirebaseFlow struct {
+		port        string
 		credentials *creds.Credentials
 	}
 
@@ -64,14 +65,12 @@ type (
 )
 
 const (
-	port       = "5000"
+	//port       = "5000"
 	refreshURL = "https://securetoken.googleapis.com/v1/token"
 	idpURL     = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp"
 )
 
 var (
-	redirectURI = fmt.Sprintf("http://localhost:%v/__/auth/handler", port)
-
 	scopes = []string{
 		"email",
 		"profile",
@@ -98,8 +97,9 @@ func handlerWrapper(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func New(config Config) *FirebaseFlow {
+func New(port string, config Config) *FirebaseFlow {
 	flow := new(FirebaseFlow)
+	flow.port = port
 	callback = flow.redirectHandler
 	cfg = config
 	return flow
@@ -133,6 +133,8 @@ func (f *FirebaseFlow) Auth() *creds.Credentials {
 	f.serve()
 
 	s := strings.Join(scopes, " ")
+
+	redirectURI := fmt.Sprintf("http://localhost:%v/__/auth/handler", f.port)
 
 	params := url.Values{}
 	params.Add("client_id", cfg.ClientID)
@@ -171,7 +173,7 @@ func (f *FirebaseFlow) serve() {
 
 	// use server so we can shutdown loter
 	srv := &http.Server{
-		Addr: ":" + port,
+		Addr: ":" + f.port,
 	}
 
 	go func() {
@@ -202,6 +204,8 @@ func (f *FirebaseFlow) redirectHandler(w http.ResponseWriter, req *http.Request)
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+
+	redirectURI := fmt.Sprintf("http://localhost:%v/__/auth/handler", f.port)
 
 	ex := Exchange{
 		Code:         code,
@@ -301,8 +305,7 @@ func (f *FirebaseFlow) redirectHandler(w http.ResponseWriter, req *http.Request)
 }
 
 func (f *FirebaseFlow) Refresh(refreshToken creds.RefreshToken) (*creds.Credentials, error) {
-	f.credentials = &creds.Credentials{
-	}
+	f.credentials = &creds.Credentials{}
 
 	token, err := doRefresh(refreshToken, APIKey(cfg.APIKey))
 	if err != nil {
@@ -324,7 +327,6 @@ func (f *FirebaseFlow) Refresh(refreshToken creds.RefreshToken) (*creds.Credenti
 
 	return f.credentials, nil
 }
-
 
 func doRefresh(token creds.RefreshToken, secret APIKey) (RefreshResponse, error) {
 	b, err := json.Marshal(struct {
