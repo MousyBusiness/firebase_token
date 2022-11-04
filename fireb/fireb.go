@@ -8,7 +8,7 @@ import (
 	"github.com/mousybusiness/firebase_token/creds"
 	"github.com/mousybusiness/firebase_token/rand"
 	"github.com/mousybusiness/firebase_token/static"
-	"github.com/mousybusiness/go-web/web"
+	"github.com/mousybusiness/firebase_token/web"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
